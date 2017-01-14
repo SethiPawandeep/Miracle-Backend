@@ -1,5 +1,5 @@
 var express = require('express');
-var fileUpload = require('express-fileupload');
+//var fileUpload = require('express-fileupload');
 var fs = require('file-system');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -176,7 +176,19 @@ var App = function () {
         });
 
         self.app.post('/upload-notes', function (req, res) {
-            var image;
+            var notes = new Notes();
+            notes.subject = req.body.subject;
+            notes.source = req.body.source;
+            
+            notes.save().then(function(data) {
+                console.log('Notes saved');
+                res.status(200).send(data);
+            }).catch(function(err) {
+                console.log('Error saving model: ' + err);
+                res.status(500).send(err);
+            })
+            
+          /*  var image;
             var notes = new Notes();
             
             if(!req.files) {
@@ -201,7 +213,7 @@ var App = function () {
                     });
                     res.send('File uploaded');
                 }
-            });
+            });*/
             /*var subject = req.body.subject;
             var tmpPath = req.files.thumbnail.path;
             var targetPath = './images/' + req.files.thumbnail.name;

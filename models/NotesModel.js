@@ -8,9 +8,12 @@ var notesSchema = new Schema({
     subject: {
         type: String
     },
-    image: {
+    /*image: {
         data: Buffer,
         contentType: String
+    }*/
+    source: {
+        type: String
     }
 });
 
