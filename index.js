@@ -1,10 +1,11 @@
 var express = require('express');
+var fileUpload = require('express-fileupload');
 var fs = require('file-system');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
-var autoIncrement = require('mongoose-auto-increment');
+
 
 var Student = require('./models/StudentModel');
 var Teacher = require('./models/TeacherModel');
@@ -114,9 +115,12 @@ var App = function () {
         }));
 
         self.app.use(bodyParser.json());
+        self.app.use(fileUpload());
+/*
         self.app.use(bodyParser({
             uploadDir: './images'
         }));
+*/
 
         for (r in self.routes) {
             if (self.routes.hasOwnProperty(r)) {
@@ -172,7 +176,33 @@ var App = function () {
         });
 
         self.app.post('/upload-notes', function (req, res) {
-            var subject = req.body.subject;
+            var image;
+            var notes = new Notes();
+            
+            if(!req.files) {
+                console.log('No files were uploaded.\n');
+                res.send('No files uploaded');
+                return;
+            }
+            
+            image = req.files.notes;
+            notes.image.data = image;
+            notes.subject = req.body.subject;
+            
+            image.mv('./images/' + req.files.name, function(err) {
+                if(err) {
+                    res.status(500).send(err);
+                }  else {
+                    notes.save().then(function(data) {
+                        console.log('Written into db'); 
+                    }).catch(function(err) {
+                        console.log('not written');
+                        res.status(500).send(err);
+                    });
+                    res.send('File uploaded');
+                }
+            });
+            /*var subject = req.body.subject;
             var tmpPath = req.files.thumbnail.path;
             var targetPath = './images/' + req.files.thumbnail.name;
             var note = new Notes();
@@ -195,7 +225,7 @@ var App = function () {
                     console.log('File uploaded to: ' + targetPath);
                     res.send('File uploaded to: ' + targetPath);
                 });
-            });
+            });*/
         });
     };
 
