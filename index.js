@@ -98,6 +98,11 @@ var App = function () {
             res.setHeader('Content-type', 'text/html');
             res.send(self.cache_get('index.html'));
         };
+        
+        self.routes['/student'] = function(req, res) {
+            var student = req.body;
+            var dat = Student.find({})
+        };
     };
 
     self.initializeServer = function () {
@@ -115,7 +120,7 @@ var App = function () {
         }));
 
         self.app.use(bodyParser.json());
-        self.app.use(fileUpload());
+//        self.app.use(fileUpload());
 /*
         self.app.use(bodyParser({
             uploadDir: './images'
