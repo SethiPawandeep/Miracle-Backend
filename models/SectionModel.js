@@ -2,6 +2,9 @@ var mongoose = require('mongoose');
 var Student = require('./StudentModel');
 var Teacher = require('./TeacherModel');
 var Schema = mongoose.Schema;
+var autoIncrement = require('mongoose-auto-increment');
+
+var connection = mongoose.createConnection('mongodb://localhost/sectionModel');
 
 var sectionSchema = new Schema({
     StudentIds: [{
@@ -23,6 +26,8 @@ var sectionSchema = new Schema({
         Attendance: []
     }
 });
+
+sectionSchema.plugin(autoIncrement.plugin, 'Section');
 
 var Section = mongoose.model('Section', sectionSchema);
 

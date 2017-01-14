@@ -47,23 +47,6 @@ var studentSchema = new Schema({
     }
 });
 
-/*
-
-//var attribute;
-var requiredAttribute = ['name', 'branch', 'year', 'section', 'mobileNumber', 'emailId', 'gender'];
-
-for (attribute in requiredAttribute) {
-    //    studentSchema[requiredAttribute[attribute]].required = true;
-    console.log(attribute);
-    //    studentSchema[attribute].required = true;
-    /*console.log(attribute + '\n');
-    console.log(requiredAttribute[attribute] + '\n');
-    console.log(studentSchema['\'' + requiredAttribute[attribute] '\'']);
-    //    studentSchema[requiredAttribute[attribute]].default = null;
-}
-
-*/
-
 studentSchema.methods.findByRollNumber = function (rollNumber) {
     return this.model('Student').find({
         rollNumber: this.rollNumber
