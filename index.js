@@ -182,7 +182,7 @@ var App = function () {
         });
     };
 
-    test();
+//    test();
 };
 
 var start = function () {
