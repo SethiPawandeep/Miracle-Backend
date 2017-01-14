@@ -10,6 +10,7 @@ var Student = require('./models/StudentModel');
 var Teacher = require('./models/TeacherModel');
 var Section = require('./models/SectionModel');
 var Feedback = require('./models/FeedbackModel');
+var Notes = require('./models/NotesModel');
 var Event = require('./models/EventModel');
 var Config = require('./config');
 
@@ -113,6 +114,9 @@ var App = function () {
         }));
 
         self.app.use(bodyParser.json());
+        self.app.use(bodyParser({
+            uploadDir: './images'
+        }));
 
         for (r in self.routes) {
             if (self.routes.hasOwnProperty(r)) {
@@ -120,28 +124,28 @@ var App = function () {
             }
         }
         self.app.post('/register', function (req, res) {
-          console.log('User Register Post\n\n');
-          var user = req.body;
-          req.session.token = Math.floor(20 * Math.random())
-          if (user.is == 0) {
-              if (Student.findByRollNumber(user.rollNumber)) {
-                  var newStudent = new Student(user);
-                  newStudent.save().then(function () {
-                      res.json(req.session);
-                  }).catch(function (err) {
-                      console.log('Error saving model: ');
-                      console.log(err);
-                      res.status(500).send(err);
-                  });
-              }
-          } else if (user.is == 1) {
-              //For teacher
-          } else if (user.is == 2) {
-              //For Admin
-          } else {
-              //Invalid
-          }
-      });
+            console.log('User Register Post\n\n');
+            var user = req.body;
+            req.session.token = Math.floor(20 * Math.random())
+            if (user.is == 0) {
+                if (Student.findByRollNumber(user.rollNumber)) {
+                    var newStudent = new Student(user);
+                    newStudent.save().then(function () {
+                        res.json(req.session);
+                    }).catch(function (err) {
+                        console.log('Error saving model: ');
+                        console.log(err);
+                        res.status(500).send(err);
+                    });
+                }
+            } else if (user.is == 1) {
+                //For teacher
+            } else if (user.is == 2) {
+                //For Admin
+            } else {
+                //Invalid
+            }
+        });
 
         self.app.post('/login', function (req, res) {
             console.log('Login POST method');
@@ -166,6 +170,33 @@ var App = function () {
                 //Invalid
             }
         });
+
+        self.app.post('/upload-notes', function (req, res) {
+            var subject = req.body.subject;
+            var tmpPath = req.files.thumbnail.path;
+            var targetPath = './images/' + req.files.thumbnail.name;
+            var note = new Notes();
+            fs.rename(tmpPath, targetPath, function (err) {
+                if (err) {
+                    throw err;
+                }
+                fs.unlink(tmpPath, function () {
+                    if (err) {
+                        throw err;
+                    }
+                    note.image.data = fs.readFileSync(targetPath);
+                    note.subject = subject;
+                    note.save().then(function (data) {
+                        console.log('Writen to db');
+                    }).fail(function (err) {
+                        console.log('Fail ho gaya');
+                        throw err;
+                    });
+                    console.log('File uploaded to: ' + targetPath);
+                    res.send('File uploaded to: ' + targetPath);
+                });
+            });
+        });
     };
 
     self.initialize = function () {
@@ -182,7 +213,7 @@ var App = function () {
         });
     };
 
-//    test();
+    //    test();
 };
 
 var start = function () {
