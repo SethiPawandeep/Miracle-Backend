@@ -1,0 +1,27 @@
+{
+  "name": "miracle-backend",
+  "version": "1.0.0",
+  "description": "Backend of Student-Teacher's portal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Backend",
+    "Miracle",
+    "Teacher",
+    "Student"
+  ],
+  "author": "Pawandeep",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "file-system": "^2.2.2",
+    "mongodb": "^2.2.21",
+    "mongoose": "^4.7.6",
+    "mongoose-auto-increment": "^5.0.1"
+  }
+}
