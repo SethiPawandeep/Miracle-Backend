@@ -99,13 +99,6 @@ var App = function () {
             res.send(self.cache_get('index.html'));
         };
 
-        self.routes['/register'] = function(req, res) {
-            console.log('GET method');
-            var user = req.body;
-            console.log(user);
-            res.json(user);
-        };
-        
         self.routes['/student'] = function (req, res) {
             var dat = Student.find({}, function (err, users) {
                 if (err) {
@@ -130,17 +123,11 @@ var App = function () {
             resave: true,
             saveUninitialized: true
         }));
-/*
+
+        self.app.use(bodyParser.json());
         self.app.use(bodyParser.urlencoded({
             extended: false
-        }));*/
-        self.app.use(bodyParser.json());
-        //        self.app.use(fileUpload());
-        /*
-                self.app.use(bodyParser({
-                    uploadDir: './images'
-                }));
-        */
+        }));
 
         for (r in self.routes) {
             if (self.routes.hasOwnProperty(r)) {
@@ -150,20 +137,18 @@ var App = function () {
         self.app.post('/register', function (req, res) {
             console.log('User Register Post\n\n');
             var user = req.body;
-            console.log(req.body)
-            req.session.token = Math.floor(20 * Math.random())
+            req.session.token = Math.floor(20 * Math.random());
             if (user.is == 0) {
-                res.json(req);
-                /*if (Studentf.findByRollNumber(user.rollNumber)) {
-                    var newStudent = new Student(user);
-                    newStudent.save().then(function () {
-                        res.json(req);
-                    }).catch(function (err) {
-                        console.log('Error saving model: ');
-                        console.log(err);
-                        res.status(500).send(err);
-                    });
-                }*/
+                var newStudent = new Student(user);
+                newStudent.save().then(function () {
+                    console.log('Model saved');
+                    res.json(req.session);
+                }).catch(function (err) {
+                    console.log('Error saving model: ');
+                    console.log(err);
+                    req.session.token = -1;
+                    res.status(500).send(req.session);
+                });
             } else if (user.is == 1) {
                 //For teacher
             } else if (user.is == 2) {
@@ -208,58 +193,7 @@ var App = function () {
             }).catch(function (err) {
                 console.log('Error saving model: ' + err);
                 res.status(500).send(err);
-            })
-
-            /*  var image;
-              var notes = new Notes();
-              
-              if(!req.files) {
-                  console.log('No files were uploaded.\n');
-                  res.send('No files uploaded');
-                  return;
-              }
-              
-              image = req.files.notes;
-              notes.image.data = image;
-              notes.subject = req.body.subject;
-              
-              image.mv('./images/' + req.files.name, function(err) {
-                  if(err) {
-                      res.status(500).send(err);
-                  }  else {
-                      notes.save().then(function(data) {
-                          console.log('Written into db'); 
-                      }).catch(function(err) {
-                          console.log('not written');
-                          res.status(500).send(err);
-                      });
-                      res.send('File uploaded');
-                  }
-              });*/
-            /*var subject = req.body.subject;
-            var tmpPath = req.files.thumbnail.path;
-            var targetPath = './images/' + req.files.thumbnail.name;
-            var note = new Notes();
-            fs.rename(tmpPath, targetPath, function (err) {
-                if (err) {
-                    throw err;
-                }
-                fs.unlink(tmpPath, function () {
-                    if (err) {
-                        throw err;
-                    }
-                    note.image.data = fs.readFileSync(targetPath);
-                    note.subject = subject;
-                    note.save().then(function (data) {
-                        console.log('Writen to db');
-                    }).fail(function (err) {
-                        console.log('Fail ho gaya');
-                        throw err;
-                    });
-                    console.log('File uploaded to: ' + targetPath);
-                    res.send('File uploaded to: ' + targetPath);
-                });
-            });*/
+            });
         });
     };
 
